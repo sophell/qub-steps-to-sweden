@@ -18,6 +18,21 @@ current_distance = 0  # km
 current_donations = 0  # GBP
 number_participants = 9
 
+milestones = {
+    "Belfast": "14th October",
+    "Dublin": "",
+    "Liverpool": "",
+    "London": "",
+    "Calais": "",
+    "Antwerp": "",
+    "Munster": "",
+    "Hamburg": "",
+    "Copenhagen": "",
+    "Malmö": "",
+    "Jönköping": "",
+    "Stockholm": ""
+    }
+
 end_date = pd.to_datetime("2025-11-04")
 start_date = pd.to_datetime("2025-10-14")
 
@@ -59,49 +74,35 @@ with distance_container:
             st.progress(min(progress_value, 1.0))
     
     with st.expander("Click to view milestones"):
-        milestones = {
-            "Belfast": "14th Oct",
-            "Dublin": "17th Oct"
-        }
-        places = list(milestones.keys())
-        dates = list(milestones.values())
 
-        date_col, milestone_col = st.columns([1,3])
+        st.subheader("📍 Milestones")
 
-        with milestone_col:
-            for place in places:
-                    st.markdown(
-                        f"""
-                        <div style="
-                            background-color:#f0f2f6;
-                            padding:10px;
-                            margin:5px 0;
-                            border-radius:8px;
-                            font-weight:bold;
-                            text-align:center;
-                        ">
-                            {place}
-                        </div>
-                        """, unsafe_allow_html=True
-                    )
+        for place, date in milestones.items():
+            if date:  # If a date exists
+                bg_color = "#6597C9"  # blue
+                text_color = "white"
+                display_text = f"{place} — {date}"
+            else:     # No date yet
+                bg_color = "#D3D3D3"  # grey
+                text_color = "black"
+                display_text = f"{place}"
 
-
-        with date_col:
-            for date in dates:
-                st.markdown(
-                    f"""
-                    <div style="
-                        background-color:#6597C9;
-                        padding:10px;
-                        margin:5px 0;
-                        border-radius:8px;
-                        font-weight:bold;
-                        text-align:center;
-                    ">
-                        {date}
-                    </div>
-                    """, unsafe_allow_html=True
-                )
+            st.markdown(
+                f"""
+                <div style="
+                    background-color:{bg_color};
+                    color:{text_color};
+                    padding:10px;
+                    margin:5px 0;
+                    border-radius:8px;
+                    font-weight:bold;
+                    text-align:center;
+                ">
+                    {display_text}
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
 
 
     
