@@ -16,12 +16,21 @@ st.set_page_config(layout="centered")
 ### UPDATE THESE VALUES ###
 current_distance = 0  # km
 current_donations = 0  # GBP
+number_participants = 9
+
+end_date = pd.to_datetime("2025-11-04")
+start_date = pd.to_datetime("2025-10-14")
+
+if pd.to_datetime("today") > start_date:
+    days_remaining = (end_date - pd.to_datetime("today")).days
+else:
+    days_remaining = (end_date - start_date).days
 
 image = Image.open("Form Banner.png")
 st.image(image, use_container_width=True)
 
-donation_container = st.container()
 distance_container = st.container()
+donation_container = st.container()
 
 with distance_container:
     st.header("Distance Progress")
@@ -48,6 +57,48 @@ with distance_container:
             st.progress(0.01)
         else:
             st.progress(min(progress_value, 1.0))
+    
+    dist_calcs = st.container()
+    
+    with dist_calcs:
+        # Remaining distance
+        dist_remaining = goal_distance - current_distance
+
+        # Average distance needed per day
+        avg_daily_dist = dist_remaining / days_remaining
+
+        # Average distance per participant
+        avg_per_person = avg_daily_dist / number_participants
+
+        total_per_person = dist_remaining / number_participants
+
+        metric1, metric2, metric3 = st.columns(3)
+        metric1.metric("Distance Remaining", f"{dist_remaining} km")
+        metric2.metric("Days Remaining", f"{days_remaining}")
+        metric3.metric("Avg Distance per Day", f"{avg_daily_dist:.1f} km")
+
+        with st.expander("Click to see this per participant"):
+            km1, km2 = st.columns(2)
+            km1.metric("Total Distance Needed per Person", f"{total_per_person:.1f} km")
+            km2.metric("Daily Distance Needed per Person", f"{avg_per_person:.1f} km")
+
+            height_cm = st.number_input(
+                "Enter your height (cm) to see this distance as steps:",
+                min_value=100,
+                max_value=250,
+                value=170,  # default value
+                step=1
+            )
+
+            stride_length_m = height_cm * 0.415 / 100
+            steps_remaining = total_per_person * 1000 / stride_length_m
+            avg_steps_per_day = steps_remaining / days_remaining
+
+            step1, step2 = st.columns(2)
+            step1.metric("Total Steps Needed", f"{steps_remaining:,.0f}")
+            step2.metric("Avg Steps per Day", f"{avg_steps_per_day:,.0f}")
+
+
 
 with donation_container:
     st.header("Donation Progress")
