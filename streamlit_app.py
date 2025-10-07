@@ -16,7 +16,7 @@ st.set_page_config(layout="centered")
 ### UPDATE THESE VALUES ###
 current_distance = 0  # km
 current_donations = 0  # GBP
-number_participants = 9
+number_participants = 8
 
 milestones = {
     "Belfast": "14th October",
@@ -44,27 +44,36 @@ else:
 image = Image.open("Form Banner.png")
 st.image(image, use_container_width=True)
 
-donation_container = st.container()
+st.title("Steps to Sweden")
+
+# donation_container = st.container()
+# st.divider()
 distance_container = st.container()
+st.divider()
+
+##########################################################################################################
+
 
 with distance_container:
     st.header("Distance Progress")
-    col1, col2 = st.columns([2,1], vertical_alignment="center")
+    goal_distance = 2650  # km
+    percent_complete = (current_distance / goal_distance) * 100
 
-    # Left column: Display fixed image
+    col1, col2, col3 = st.columns([1,1,1], vertical_alignment="top")
     with col1:
-        image = Image.open("Dashboard - Map 1.png")
-        st.image(image, use_container_width=True)
-
-    # Right column: Display stats
+        st.metric(label="Goal (km):", value=f"{goal_distance}")
     with col2:
-        goal_distance = 2650  # km
-
-        percent_complete = (current_distance / goal_distance) * 100
-
-        st.metric(label="Goal Distance (km)", value=f"{goal_distance}")
-        st.metric(label="Current Distance (km)", value=f"{current_distance}")
+        st.metric(label="Travelled (km):", value=f"{current_distance}")
+    with col3:
         st.metric(label="% of Goal Complete", value=f"{percent_complete:.1f}%")
+
+    image = Image.open("Dashboard - Map 1.png")
+    st.image(image, use_container_width=True)
+
+    
+    with st.expander("Click to view milestones"):
+
+        st.subheader("📍 Milestones")
 
         # Show any progress, even if less than 1%
         progress_value = percent_complete / 100
@@ -72,10 +81,6 @@ with distance_container:
             st.progress(0.01)
         else:
             st.progress(min(progress_value, 1.0))
-    
-    with st.expander("Click to view milestones"):
-
-        st.subheader("📍 Milestones")
 
         for place, date in milestones.items():
             if date:  # If a date exists
@@ -103,8 +108,6 @@ with distance_container:
                 """,
                 unsafe_allow_html=True
             )
-
-
     
     dist_calcs = st.container()
     
@@ -147,44 +150,49 @@ with distance_container:
             step1.metric("Total Steps Needed", f"{steps_remaining:,.0f}")
             step2.metric("Avg Steps per Day", f"{avg_steps_per_day:,.0f}")
 
-with donation_container:
-    st.header("Fundraising Progress")
 
-    goal_donations = 5000  # GBP
-    remaining_donations = goal_donations - current_donations
-    percent_complete = (current_donations / goal_donations) * 100
+##########################################################################################################
 
-    col3, col4 = st.columns([1,3], vertical_alignment="center")
-    with col3:
-        st.metric(label="Goal:", value=f"£{goal_donations}")
-    with col4:
-        st.metric(label="Raised:", value=f"£{current_donations}")
+# with donation_container:
+#     st.header("Fundraising Progress")
 
-    # Pie chart data
-    data = {
-        "Status": ["Raised", "Remaining"],
-        "Amount": [current_donations, remaining_donations]
-    }
+#     goal_donations = 5000  # GBP
+#     remaining_donations = goal_donations - current_donations
+#     percent_complete = (current_donations / goal_donations) * 100
 
-    # Create Plotly figure
-    fig = px.pie(
-        data,
-        names="Status",
-        values="Amount",
-        color="Status",
-        color_discrete_map={"Raised": "#7DC180", "Remaining": "#D5DBE0"},
-        hole=0.5,  # makes it a donut chart (optional)
-    )
+#     col3, col4 = st.columns(2, vertical_alignment="center")
 
-    # Customise labels and title
-    fig.update_traces(textinfo='percent+label', textfont_size=20)
-    fig.update_layout(
-        showlegend=False,
-    )
+#     with col3:
+#         st.metric(label="Goal:", value=f"£{goal_donations}")
+#     with col4:
+#         st.metric(label="Raised:", value=f"£{current_donations}")
 
-    # Display in Streamlit
-    st.plotly_chart(fig, use_container_width=True)
+#     # Pie chart data
+#     data = {
+#         "Status": ["Raised", "Remaining"],
+#         "Amount": [current_donations, remaining_donations]
+#     }
 
+#     # Create Plotly figure
+#     fig = px.pie(
+#         data,
+#         names="Status",
+#         values="Amount",
+#         color="Status",
+#         color_discrete_map={"Raised": "#7DC180", "Remaining": "#D5DBE0"},
+#         hole=0.5,  # makes it a donut chart (optional)
+#     )
+
+#     # Customise labels and title
+#     fig.update_traces(textinfo='percent+label', textfont_size=20)
+#     fig.update_layout(
+#         showlegend=False,
+#     )
+
+#     # Display in Streamlit
+#     st.plotly_chart(fig, use_container_width=True)
+
+##########################################################################################################
 
 ## LEADERBOARD SECTION ###
 leaderboard_container = st.container()
