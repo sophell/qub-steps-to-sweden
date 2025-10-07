@@ -29,8 +29,8 @@ else:
 image = Image.open("Form Banner.png")
 st.image(image, use_container_width=True)
 
-distance_container = st.container()
 donation_container = st.container()
+distance_container = st.container()
 
 with distance_container:
     st.header("Distance Progress")
@@ -58,6 +58,53 @@ with distance_container:
         else:
             st.progress(min(progress_value, 1.0))
     
+    with st.expander("Click to view milestones"):
+        milestones = {
+            "Belfast": "14th Oct",
+            "Dublin": "17th Oct"
+        }
+        places = list(milestones.keys())
+        dates = list(milestones.values())
+
+        date_col, milestone_col = st.columns([1,3])
+
+        with milestone_col:
+            for place in places:
+                    st.markdown(
+                        f"""
+                        <div style="
+                            background-color:#f0f2f6;
+                            padding:10px;
+                            margin:5px 0;
+                            border-radius:8px;
+                            font-weight:bold;
+                            text-align:center;
+                        ">
+                            {place}
+                        </div>
+                        """, unsafe_allow_html=True
+                    )
+
+
+        with date_col:
+            for date in dates:
+                st.markdown(
+                    f"""
+                    <div style="
+                        background-color:#6597C9;
+                        padding:10px;
+                        margin:5px 0;
+                        border-radius:8px;
+                        font-weight:bold;
+                        text-align:center;
+                    ">
+                        {date}
+                    </div>
+                    """, unsafe_allow_html=True
+                )
+
+
+    
     dist_calcs = st.container()
     
     with dist_calcs:
@@ -73,11 +120,12 @@ with distance_container:
         total_per_person = dist_remaining / number_participants
 
         metric1, metric2, metric3 = st.columns(3)
-        metric1.metric("Distance Remaining", f"{dist_remaining} km")
-        metric2.metric("Days Remaining", f"{days_remaining}")
+        metric1.metric("Days Remaining", f"{days_remaining}")
+        metric2.metric("Distance Remaining", f"{dist_remaining} km")
         metric3.metric("Avg Distance per Day", f"{avg_daily_dist:.1f} km")
 
-        with st.expander("Click to see this per participant"):
+        with st.expander("Click to see distances per participant"):
+            st.text(f"Number of Participants: {number_participants}")
             km1, km2 = st.columns(2)
             km1.metric("Total Distance Needed per Person", f"{total_per_person:.1f} km")
             km2.metric("Daily Distance Needed per Person", f"{avg_per_person:.1f} km")
@@ -98,118 +146,116 @@ with distance_container:
             step1.metric("Total Steps Needed", f"{steps_remaining:,.0f}")
             step2.metric("Avg Steps per Day", f"{avg_steps_per_day:,.0f}")
 
-
-
 with donation_container:
-    st.header("Donation Progress")
-    col3, col4 = st.columns([1,2], vertical_alignment="center")
+    st.header("Fundraising Progress")
 
+    goal_donations = 5000  # GBP
+    remaining_donations = goal_donations - current_donations
+    percent_complete = (current_donations / goal_donations) * 100
+
+    col3, col4 = st.columns([1,3], vertical_alignment="center")
     with col3:
-        goal_donations = 5000  # GBP
-        remaining_donations = goal_donations - current_donations
-
-        percent_complete = (current_donations / goal_donations) * 100
-
         st.metric(label="Goal:", value=f"£{goal_donations}")
+    with col4:
         st.metric(label="Raised:", value=f"£{current_donations}")
 
-    with col4:
     # Pie chart data
-        data = {
-            "Status": ["Raised", "Remaining"],
-            "Amount": [current_donations, remaining_donations]
-        }
+    data = {
+        "Status": ["Raised", "Remaining"],
+        "Amount": [current_donations, remaining_donations]
+    }
 
-        # Create Plotly figure
-        fig = px.pie(
-            data,
-            names="Status",
-            values="Amount",
-            color="Status",
-            color_discrete_map={"Raised": "#7DC180", "Remaining": "#D5DBE0"},
-            hole=0.5,  # makes it a donut chart (optional)
-        )
+    # Create Plotly figure
+    fig = px.pie(
+        data,
+        names="Status",
+        values="Amount",
+        color="Status",
+        color_discrete_map={"Raised": "#7DC180", "Remaining": "#D5DBE0"},
+        hole=0.5,  # makes it a donut chart (optional)
+    )
 
-        # Customise labels and title
-        fig.update_traces(textinfo='percent+label', textfont_size=20)
-        fig.update_layout(
-            showlegend=False,
-        )
+    # Customise labels and title
+    fig.update_traces(textinfo='percent+label', textfont_size=20)
+    fig.update_layout(
+        showlegend=False,
+    )
 
-        # Display in Streamlit
-        st.plotly_chart(fig, use_container_width=True)
-
-### LEADERBOARD SECTION ###
-# leaderboard_container = st.container()
-# with leaderboard_container:
-#     st.header("Distance Leaderboard")
-#     leaderboard_df = pd.read_csv("leaderboard.csv")
-#     leaderboard_df = leaderboard_df.sort_values(by="Distance", ascending=False).reset_index(drop=True)
-
-#     # Create Plotly bar chart
-#     fig = px.bar(
-#         leaderboard_df,
-#         x="Distance",
-#         y="Name",
-#         orientation='h',  # Horizontal bars
-#         text="Distance",  # Show distance on each bar
-#         color="Distance",
-#         color_continuous_scale="blugrn",
-#         height=400
-#     )
-
-#     # Polish layout
-#     fig.update_layout(
-#         yaxis=dict(autorange="reversed"),  # Highest value on top
-#         xaxis_title="Distance (km)",
-#         yaxis_title=" ",
-#         margin=dict(l=50, r=20, t=40, b=40),
-#         coloraxis_showscale=False  # Hide color legend
-#     )
-#     fig.update_traces(textposition='outside')
-
-#     # Display in Streamlit
-#     st.plotly_chart(fig, use_container_width=True)
-
-#     # names = leaderboard_df["Name"].tolist()
-#     # places = list(range(1, len(names)+1))
-
-#     # col_pos, col_name = st.columns([1,4])
-
-#     # with col_pos:
-#     #     for place in places:
-#     #             st.markdown(
-#     #                 f"""
-#     #                 <div style="
-#     #                     background-color:#f0f2f6;
-#     #                     padding:10px;
-#     #                     margin:5px 0;
-#     #                     border-radius:8px;
-#     #                     font-weight:bold;
-#     #                     text-align:center;
-#     #                 ">
-#     #                     {place}
-#     #                 </div>
-#     #                 """, unsafe_allow_html=True
-#     #             )
+    # Display in Streamlit
+    st.plotly_chart(fig, use_container_width=True)
 
 
-#     # with col_name:
-#     #     for name in names:
-#     #         st.markdown(
-#     #             f"""
-#     #             <div style="
-#     #                 background-color:#f0f2f6;
-#     #                 padding:10px;
-#     #                 margin:5px 0;
-#     #                 border-radius:8px;
-#     #                 font-weight:bold;
-#     #                 text-align:center;
-#     #             ">
-#     #                 {name}
-#     #             </div>
-#     #             """, unsafe_allow_html=True
-#     #         )
+## LEADERBOARD SECTION ###
+leaderboard_container = st.container()
+with leaderboard_container:
+    st.header("Distance Leaderboard")
+    leaderboard_df = pd.read_csv("leaderboard.csv")
+    leaderboard_df = leaderboard_df.sort_values(by="Distance", ascending=False).reset_index(drop=True)
+
+    # Create Plotly bar chart
+    fig = px.bar(
+        leaderboard_df,
+        x="Distance",
+        y="Name",
+        orientation='h',  # Horizontal bars
+        text="Distance",  # Show distance on each bar
+        color="Distance",
+        color_continuous_scale="blugrn",
+        height=400
+    )
+
+    # Polish layout
+    fig.update_layout(
+        yaxis=dict(autorange="reversed"),  # Highest value on top
+        xaxis_title="Distance (km)",
+        yaxis_title=" ",
+        margin=dict(l=50, r=20, t=40, b=40),
+        coloraxis_showscale=False  # Hide color legend
+    )
+    fig.update_traces(textposition='outside')
+
+    # Display in Streamlit
+    st.plotly_chart(fig, use_container_width=True)
+
+    # names = leaderboard_df["Name"].tolist()
+    # places = list(range(1, len(names)+1))
+
+    # col_pos, col_name = st.columns([1,4])
+
+    # with col_pos:
+    #     for place in places:
+    #             st.markdown(
+    #                 f"""
+    #                 <div style="
+    #                     background-color:#f0f2f6;
+    #                     padding:10px;
+    #                     margin:5px 0;
+    #                     border-radius:8px;
+    #                     font-weight:bold;
+    #                     text-align:center;
+    #                 ">
+    #                     {place}
+    #                 </div>
+    #                 """, unsafe_allow_html=True
+    #             )
+
+
+    # with col_name:
+    #     for name in names:
+    #         st.markdown(
+    #             f"""
+    #             <div style="
+    #                 background-color:#f0f2f6;
+    #                 padding:10px;
+    #                 margin:5px 0;
+    #                 border-radius:8px;
+    #                 font-weight:bold;
+    #                 text-align:center;
+    #             ">
+    #                 {name}
+    #             </div>
+    #             """, unsafe_allow_html=True
+    #         )
 
 
 st.caption("Page last updated: 7th October 2025")
