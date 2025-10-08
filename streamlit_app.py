@@ -68,6 +68,9 @@ distance_progress = st.container()
 # st.divider()
 dist_calcs = st.container()
 st.divider()
+leaderboard_container = st.container()
+st.divider()
+photo_gallery = st.container()
 
 ##########################################################################################################
 # DISTANCE SECTION ###
@@ -171,7 +174,6 @@ with dist_calcs:
 ##########################################################################################################
 
 ## LEADERBOARD SECTION ###
-leaderboard_container = st.container()
 with leaderboard_container:
     st.header("Distance Leaderboard")
     leaderboard_df = leaderboard_df.sort_values(by="DISTANCE", ascending=False).reset_index(drop=True)
@@ -200,6 +202,23 @@ with leaderboard_container:
 
     # Display in Streamlit
     st.plotly_chart(fig, use_container_width=True)
+
+##########################################################################################################
+##### PHOTO SECTION #####
+with photo_gallery:
+    st.header("Photo Gallery")
+
+    images = [
+        "Photo1.png",
+        "Photo2.png",
+        "Photo3.png"
+    ]
+
+    cols = st.columns(3)  # Adjust number of columns as needed
+
+    for idx, img_path in enumerate(images):
+        image = Image.open(img_path)
+        cols[idx % 3].image(image, use_container_width=False)  # Cycle through columns
 
 
 st.caption("Page data last updated: 8th October 2025")
