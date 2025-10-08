@@ -18,7 +18,7 @@ st.set_page_config(layout="centered")
 ####### UPDATE THESE VALUES #######
 current_distance = 0  # km
 current_donations = 0  # GBP
-number_participants = 8
+number_participants = 9
 leaderboard_df = pd.read_csv("Fundraiser Tracker 25-10-08.csv")
 
 milestones = {
