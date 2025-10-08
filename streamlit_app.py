@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit.components.v1 as components
 from PIL import Image
 import plotly.express as px
 import pandas as pd
@@ -13,10 +14,11 @@ st.sidebar.markdown("[Donation Log (Participants Only)](https://bit.ly/s2s-donat
 # Main page
 st.set_page_config(layout="centered")
 
-### UPDATE THESE VALUES ###
+####### UPDATE THESE VALUES #######
 current_distance = 0  # km
 current_donations = 0  # GBP
 number_participants = 8
+leaderboard_df = pd.read_csv("Fundraiser Tracker 25-10-08.csv")
 
 milestones = {
     "Belfast": "14th October",
@@ -46,31 +48,45 @@ st.image(image, use_container_width=True)
 
 st.title("Steps to Sweden")
 
+gfm_url = "https://www.gofundme.com/f/qub-steps-to-sweden/widget/medium"
+
+st.markdown(
+    f"""
+    <iframe src="{gfm_url}"
+            width="100%"
+            height="200"
+            frameborder="0"
+            scrolling="no">
+    </iframe>
+    """,
+    unsafe_allow_html=True
+)
+
+distance_progress = st.container()
 # donation_container = st.container()
 # st.divider()
-distance_container = st.container()
+dist_calcs = st.container()
 st.divider()
 
 ##########################################################################################################
-
-
-with distance_container:
+# DISTANCE SECTION ###
+with distance_progress:
     st.header("Distance Progress")
-    goal_distance = 2650  # km
-    percent_complete = (current_distance / goal_distance) * 100
 
-    col1, col2, col3 = st.columns([1,1,1], vertical_alignment="top")
+    col1, col2 = st.columns([3,1], vertical_alignment="center")
+
     with col1:
-        st.metric(label="Goal (km):", value=f"{goal_distance}")
+        image = Image.open("Dashboard - Map 1.png")
+        st.image(image, use_container_width=True)   
+    
     with col2:
+        goal_distance = 2650  # km
+        percent_complete = (current_distance / goal_distance) * 100
+
+        st.metric(label="Goal (km):", value=f"{goal_distance}")
         st.metric(label="Travelled (km):", value=f"{current_distance}")
-    with col3:
         st.metric(label="% of Goal Complete", value=f"{percent_complete:.1f}%")
 
-    image = Image.open("Dashboard - Map 1.png")
-    st.image(image, use_container_width=True)
-
-    
     with st.expander("Click to view milestones"):
 
         st.subheader("📍 Milestones")
@@ -108,89 +124,48 @@ with distance_container:
                 """,
                 unsafe_allow_html=True
             )
-    
-    dist_calcs = st.container()
-    
-    with dist_calcs:
-        # Remaining distance
-        dist_remaining = goal_distance - current_distance
-
-        # Average distance needed per day
-        avg_daily_dist = dist_remaining / days_remaining
-
-        # Average distance per participant
-        avg_per_person = avg_daily_dist / number_participants
-
-        total_per_person = dist_remaining / number_participants
-
-        metric1, metric2, metric3 = st.columns(3)
-        metric1.metric("Days Remaining", f"{days_remaining}")
-        metric2.metric("Distance Remaining", f"{dist_remaining} km")
-        metric3.metric("Avg Distance per Day", f"{avg_daily_dist:.1f} km")
-
-        with st.expander("Click to see distances per participant"):
-            st.text(f"Number of Participants: {number_participants}")
-            km1, km2 = st.columns(2)
-            km1.metric("Total Distance Needed per Person", f"{total_per_person:.1f} km")
-            km2.metric("Daily Distance Needed per Person", f"{avg_per_person:.1f} km")
-
-            height_cm = st.number_input(
-                "Enter your height (cm) to see this distance as steps:",
-                min_value=100,
-                max_value=250,
-                value=170,  # default value
-                step=1
-            )
-
-            stride_length_m = height_cm * 0.415 / 100
-            steps_remaining = total_per_person * 1000 / stride_length_m
-            avg_steps_per_day = steps_remaining / days_remaining
-
-            step1, step2 = st.columns(2)
-            step1.metric("Total Steps Needed", f"{steps_remaining:,.0f}")
-            step2.metric("Avg Steps per Day", f"{avg_steps_per_day:,.0f}")
-
 
 ##########################################################################################################
+    
+with dist_calcs:
+    # Remaining distance
+    dist_remaining = goal_distance - current_distance
 
-# with donation_container:
-#     st.header("Fundraising Progress")
+    # Average distance needed per day
+    avg_daily_dist = dist_remaining / days_remaining
 
-#     goal_donations = 5000  # GBP
-#     remaining_donations = goal_donations - current_donations
-#     percent_complete = (current_donations / goal_donations) * 100
+    # Average distance per participant
+    avg_per_person = avg_daily_dist / number_participants
 
-#     col3, col4 = st.columns(2, vertical_alignment="center")
+    total_per_person = dist_remaining / number_participants
 
-#     with col3:
-#         st.metric(label="Goal:", value=f"£{goal_donations}")
-#     with col4:
-#         st.metric(label="Raised:", value=f"£{current_donations}")
+    metric1, metric2, metric3 = st.columns(3)
+    metric1.metric("Days Remaining", f"{days_remaining}")
+    metric2.metric("Distance Remaining", f"{dist_remaining} km")
+    metric3.metric("Avg Distance per Day", f"{avg_daily_dist:.1f} km")
 
-#     # Pie chart data
-#     data = {
-#         "Status": ["Raised", "Remaining"],
-#         "Amount": [current_donations, remaining_donations]
-#     }
+    with st.expander("Click to calculate distances per participant"):
+        st.text(f"Number of Participants: {number_participants}")
+        km1, km2 = st.columns(2)
+        km1.metric("Total Distance Needed per Person", f"{total_per_person:.1f} km")
+        km2.metric("Daily Distance Needed per Person", f"{avg_per_person:.1f} km")
 
-#     # Create Plotly figure
-#     fig = px.pie(
-#         data,
-#         names="Status",
-#         values="Amount",
-#         color="Status",
-#         color_discrete_map={"Raised": "#7DC180", "Remaining": "#D5DBE0"},
-#         hole=0.5,  # makes it a donut chart (optional)
-#     )
+        height_cm = st.number_input(
+            "Enter your height (cm) to see this distance as steps:",
+            min_value=100,
+            max_value=250,
+            value=170,  # default value
+            step=1
+        )
 
-#     # Customise labels and title
-#     fig.update_traces(textinfo='percent+label', textfont_size=20)
-#     fig.update_layout(
-#         showlegend=False,
-#     )
+        stride_length_m = height_cm * 0.415 / 100
+        steps_remaining = total_per_person * 1000 / stride_length_m
+        avg_steps_per_day = steps_remaining / days_remaining
 
-#     # Display in Streamlit
-#     st.plotly_chart(fig, use_container_width=True)
+        step1, step2 = st.columns(2)
+        step1.metric("Total Steps Needed", f"{steps_remaining:,.0f}")
+        step2.metric("Avg Steps per Day", f"{avg_steps_per_day:,.0f}")
+
 
 ##########################################################################################################
 
@@ -198,17 +173,16 @@ with distance_container:
 leaderboard_container = st.container()
 with leaderboard_container:
     st.header("Distance Leaderboard")
-    leaderboard_df = pd.read_csv("leaderboard.csv")
-    leaderboard_df = leaderboard_df.sort_values(by="Distance", ascending=False).reset_index(drop=True)
+    leaderboard_df = leaderboard_df.sort_values(by="DISTANCE", ascending=False).reset_index(drop=True)
 
     # Create Plotly bar chart
     fig = px.bar(
         leaderboard_df,
-        x="Distance",
-        y="Name",
+        x="DISTANCE",
+        y="NAME",
         orientation='h',  # Horizontal bars
-        text="Distance",  # Show distance on each bar
-        color="Distance",
+        text="DISTANCE",  # Show distance on each bar
+        color="DISTANCE",
         color_continuous_scale="blugrn",
         height=400
     )
@@ -226,45 +200,5 @@ with leaderboard_container:
     # Display in Streamlit
     st.plotly_chart(fig, use_container_width=True)
 
-    # names = leaderboard_df["Name"].tolist()
-    # places = list(range(1, len(names)+1))
 
-    # col_pos, col_name = st.columns([1,4])
-
-    # with col_pos:
-    #     for place in places:
-    #             st.markdown(
-    #                 f"""
-    #                 <div style="
-    #                     background-color:#f0f2f6;
-    #                     padding:10px;
-    #                     margin:5px 0;
-    #                     border-radius:8px;
-    #                     font-weight:bold;
-    #                     text-align:center;
-    #                 ">
-    #                     {place}
-    #                 </div>
-    #                 """, unsafe_allow_html=True
-    #             )
-
-
-    # with col_name:
-    #     for name in names:
-    #         st.markdown(
-    #             f"""
-    #             <div style="
-    #                 background-color:#f0f2f6;
-    #                 padding:10px;
-    #                 margin:5px 0;
-    #                 border-radius:8px;
-    #                 font-weight:bold;
-    #                 text-align:center;
-    #             ">
-    #                 {name}
-    #             </div>
-    #             """, unsafe_allow_html=True
-    #         )
-
-
-st.caption("Page last updated: 7th October 2025")
+st.caption("Page data last updated: 8th October 2025")
