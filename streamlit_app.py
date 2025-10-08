@@ -5,7 +5,8 @@ import plotly.express as px
 import pandas as pd
 
 # Sidebar with useful links
-st.sidebar.title("Useful Links")
+st.sidebar.title("Steps to Sweden")
+st.sidebar.header("Useful Links")
 st.sidebar.markdown("[GoFundMe Page](https://bit.ly/QUBStepsToSweden)")
 st.sidebar.markdown("[Participant Sign-up Form](https://bit.ly/s2s-signup)")
 st.sidebar.markdown("[Distance Log (Participants Only)](https://bit.ly/s2s-distance-log)")
@@ -46,7 +47,7 @@ else:
 image = Image.open("Form Banner.png")
 st.image(image, use_container_width=True)
 
-st.title("Steps to Sweden")
+# st.title("Steps to Sweden")
 
 gfm_url = "https://www.gofundme.com/f/qub-steps-to-sweden/widget/medium"
 
