@@ -213,12 +213,17 @@ with photo_gallery:
         "Photo2.png",
         "Photo3.png"
     ]
+    captions = [
+        "Caption for Photo 1",
+        "Caption for Photo 2",
+        "Caption for Photo 3"
+    ]
 
     cols = st.columns(3)  # Adjust number of columns as needed
 
-    for idx, img_path in enumerate(images):
+    for idx, (img_path, caption) in enumerate(zip(images, captions)):
         image = Image.open(img_path)
-        cols[idx % 3].image(image, use_container_width=False)  # Cycle through columns
+        cols[idx % 3].image(image, caption=caption, width='content')
 
 
 st.caption("Page data last updated: 8th October 2025")
