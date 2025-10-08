@@ -201,7 +201,7 @@ with leaderboard_container:
     fig.update_traces(textposition='outside')
 
     # Display in Streamlit
-    st.plotly_chart(fig, width='content')
+    st.plotly_chart(fig, config={"responsive": True})
 
 ##########################################################################################################
 ##### PHOTO SECTION #####
