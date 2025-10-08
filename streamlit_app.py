@@ -45,7 +45,7 @@ else:
     days_remaining = (end_date - start_date).days
 
 image = Image.open("Form Banner.png")
-st.image(image, use_container_width=True)
+st.image(image, width="content")
 
 # st.title("Steps to Sweden")
 
@@ -81,7 +81,7 @@ with distance_progress:
 
     with col1:
         image = Image.open("Dashboard - Map 1.png")
-        st.image(image, use_container_width=True)   
+        st.image(image, width='content')   
     
     with col2:
         goal_distance = 2650  # km
@@ -201,7 +201,7 @@ with leaderboard_container:
     fig.update_traces(textposition='outside')
 
     # Display in Streamlit
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='content')
 
 ##########################################################################################################
 ##### PHOTO SECTION #####
